@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ratehub Partner Portal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="assets/brand/favicon-32x32.png">
+<link rel="stylesheet" href="colors_and_type.css">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: var(--rh-coconut); }
+  * { box-sizing: border-box; }
+  button, input, select, textarea { font-family: inherit; }
+  .serif { font-family: 'Source Serif 4', Georgia, serif; font-weight: 600; letter-spacing: -0.01em; }
+  .mono { font-family: var(--rh-font-mono); }
+  .eyebrow {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--rh-stone-darkest);
+  }
+  .focus-ring:focus-visible { outline: none; box-shadow: var(--rh-shadow-focus); }
+  .scroll-y { overflow-y: auto; }
+  .scroll-y::-webkit-scrollbar { width: 8px; }
+  .scroll-y::-webkit-scrollbar-thumb { background: var(--rh-stone); border-radius: 4px; }
+  .fade-in { animation: fadeIn 220ms ease-out; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  .slide-in { animation: slideIn 280ms cubic-bezier(.2,.8,.2,1); }
+  @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+  .backdrop-fade { animation: backdropFade 200ms ease-out; }
+  @keyframes backdropFade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes pulse-dot {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.4); opacity: .55; }
+  }
+  .pulse-dot { animation: pulse-dot 1.4s ease-in-out infinite; }
+  .nav-item { transition: background-color 200ms, color 200ms; }
+  .nav-item:hover { background: var(--rh-stone-lightest); }
+  .row-hover:hover { background: var(--rh-stone-lightest); }
+  .link-anchor { color: var(--rh-blueberry-dark); text-decoration: none; box-shadow: inset 0 -1px 0 0 currentColor; transition: color 200ms; }
+  .link-anchor:hover { color: var(--rh-blueberry); }
+  /* Recharts overrides */
+  .recharts-tooltip-wrapper { outline: none !important; }
+  .recharts-cartesian-axis-tick text { fill: var(--rh-stone-darkest); font-size: 11px; }
+  .recharts-cartesian-grid line { stroke: var(--rh-stone-light); }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
+<script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="src/icons.jsx"></script>
+<script type="text/babel" src="src/primitives.jsx"></script>
+<script type="text/babel" src="src/data.jsx"></script>
+<script type="text/babel" src="src/SignIn.jsx"></script>
+<script type="text/babel" src="src/Sidebar.jsx"></script>
+<script type="text/babel" src="src/Overview.jsx"></script>
+<script type="text/babel" src="src/Mortgage.jsx"></script>
+<script type="text/babel" src="src/ApplicationForm.jsx"></script>
+<script type="text/babel" src="src/CreditCards.jsx"></script>
+<script type="text/babel" src="src/Insurance.jsx"></script>
+<script type="text/babel" src="src/Misc.jsx"></script>
+<script type="text/babel" src="src/App.jsx"></script>
+</body>
+</html>
