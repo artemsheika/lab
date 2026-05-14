@@ -102,7 +102,22 @@ const ACCENT_COLORS = [
 
 const CC_REWARD_TYPES = ['All reward types', 'Cash back', 'Store credit', 'Travel', 'Flexible points'];
 
+const EBANK_QUICK_LINKS = [
+  { id: 'credit-cards', label: 'Credit Cards', url: 'https://www.ratehub.ca/credit-cards' },
+  { id: 'gic',          label: 'GIC',          url: 'https://www.ratehub.ca/gic' },
+  { id: 'banking',      label: 'Banking',      url: 'https://www.ratehub.ca/banking' },
+  { id: 'loans',        label: 'Loans',        url: 'https://www.ratehub.ca/loans' },
+];
+
+const EBANK_CALCULATORS = [
+  { id: 'tfsa-calculator',                    name: 'TFSA Calculator',                    desc: 'Help users see how much tax-free room they have.' },
+  { id: 'rrsp-calculator',                    name: 'RRSP Contribution Room Calculator', desc: 'Show users their RRSP contribution limit for the year.' },
+  { id: 'compound-interest-calculator',       name: 'Compound Interest Calculator',       desc: 'Visualize how savings grow over time.' },
+  { id: 'credit-card-interest-calculator',    name: 'Credit Card Interest Calculator',    desc: 'Show users the real cost of carrying a balance.' },
+];
+
 Object.assign(window, {
   PARTNER, todayStr, RANGES, BU_DATA, MORTGAGE_WIDGETS, PROVINCES, TRAFFIC_TIERS,
-  ACCENT_COLORS, CC_REWARD_TYPES, formatMoney, formatMoneyShort,
+  ACCENT_COLORS, CC_REWARD_TYPES, EBANK_QUICK_LINKS, EBANK_CALCULATORS,
+  formatMoney, formatMoneyShort,
 });

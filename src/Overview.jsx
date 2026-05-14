@@ -24,26 +24,60 @@ const ChartTooltip = ({ active, payload, label }) => {
   );
 };
 
-const QuickAccess = ({ name, status, desc, last, onOpen, icon }) => (
-  <Card padding={20} hover onClick={onOpen} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <div style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--rh-blueberry-lightest)', color: 'var(--rh-blueberry-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{icon}</div>
-        <div style={{ fontSize: 15, fontWeight: 500 }}>{name}</div>
-      </div>
-      {STATUS_PILL(status)}
+const QuickAccess = null;
+
+// (Quick access section removed; component kept null as a no-op placeholder.)
+
+// Custom BU filter row — locked BUs route to their tab; approved BUs filter the demo data.
+const BuFilterRow = ({ value, onChange, onRoute, status }) => {
+  const items = [
+    { v: 'all',       label: 'All',              gated: false },
+    { v: 'mortgage',  label: 'Mortgage',         gated: false },
+    { v: 'cards',     label: 'Everyday Banking', gated: status.cards !== 'approved' },
+    { v: 'insurance', label: 'Insurance',        gated: status.insurance !== 'approved' },
+  ];
+  return (
+    <div style={{
+      display: 'inline-flex', padding: 3, background: 'var(--rh-stone-lightest)',
+      border: '1px solid var(--rh-stone-light)', borderRadius: 9,
+    }}>
+      {items.map(opt => {
+        const active = opt.v === value && !opt.gated;
+        return (
+          <button key={opt.v}
+            onClick={() => opt.gated ? onRoute(opt.v) : onChange(opt.v)}
+            title={opt.gated ? 'Apply for access' : undefined}
+            style={{
+              border: 'none', background: active ? '#fff' : 'transparent',
+              color: active ? 'var(--rh-blackberry)' : opt.gated ? 'var(--rh-stone)' : 'var(--rh-stone-darkest)',
+              padding: '7px 14px',
+              fontSize: 13, fontWeight: 500,
+              borderRadius: 6, cursor: 'pointer', fontFamily: 'inherit',
+              boxShadow: active ? '0 1px 2px rgba(0,79,110,.10), 0 0 0 1px rgba(0,79,110,.06)' : 'none',
+              transition: 'all 150ms',
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+            }}>
+            {opt.gated && <I.Lock size={12} stroke={2}/>}
+            {opt.label}
+          </button>
+        );
+      })}
     </div>
-    <div style={{ fontSize: 13, color: 'var(--rh-stone-darkest)', lineHeight: 1.5 }}>{desc}</div>
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid var(--rh-stone-light)', paddingTop: 12 }}>
-      <span style={{ fontSize: 11.5, color: 'var(--rh-stone-darkest)' }}>{last}</span>
-      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--rh-blueberry-dark)', fontSize: 13, fontWeight: 500 }}>Open <I.ArrowRight size={13}/></span>
-    </div>
-  </Card>
-);
+  );
+};
 
 const Overview = ({ status, onNavigate }) => {
   const [bu, setBu] = React.useState('all');
   const [range, setRange] = React.useState('30d');
+
+  // If an approved BU drops back to locked/pending, snap the filter back to 'all'
+  React.useEffect(() => {
+    if ((bu === 'cards' && status.cards !== 'approved') ||
+        (bu === 'insurance' && status.insurance !== 'approved')) {
+      setBu('all');
+    }
+  }, [status.cards, status.insurance]);
+
   const data = BU_DATA[bu];
   const series = RANGES[range].series.map(p => ({ ...p, value: +(p.value * data.multiplier).toFixed(2) }));
 
@@ -58,33 +92,37 @@ const Overview = ({ status, onNavigate }) => {
         <p style={{ fontSize: 15, color: 'var(--rh-stone-darkest)', margin: 0 }}>Here's how your Ratehub partner account is performing.</p>
       </div>
 
+      <InfoBanner style={{ marginBottom: 20 }}>
+        Demo data shown for illustration. Production analytics will be configured per business unit, with metrics tailored to each product.
+      </InfoBanner>
+
       {/* Filter row */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18, gap: 12, flexWrap: 'wrap' }}>
-        <Segmented value={bu} onChange={setBu} options={[
-          { value: 'all', label: 'All' },
-          { value: 'mortgage', label: 'Mortgage' },
-          { value: 'cards', label: 'Credit Cards' },
-          { value: 'insurance', label: 'Insurance' },
-        ]}/>
+      <div className="overview-filter-row" style={{ marginBottom: 18, gap: 12 }}>
+        <div className="scrollbar-none" style={{
+          overflowX: 'auto', display: 'flex', WebkitOverflowScrolling: 'touch',
+          maxWidth: '100%',
+        }}>
+          <BuFilterRow value={bu} onChange={setBu} onRoute={onNavigate} status={status}/>
+        </div>
         <SelectEl value={range} onChange={(e) => setRange(e.target.value)}
           options={Object.entries(RANGES).map(([v, r]) => ({ value: v, label: r.label }))}
           style={{ width: 180 }}/>
       </div>
 
       {/* Stat cards */}
-      <div style={{ display: 'flex', gap: 16, marginBottom: 20 }}>
+      <div className="overview-stats" style={{ marginBottom: 20 }}>
         <Stat label="Total earned" value={formatMoney(data.earned) + ' CAD'} delta={data.dEarn}/>
         <Stat label="Total leads" value={data.leads.toLocaleString()} delta={data.dLeads}/>
         <Stat label="Conversion rate (lead → close)" value={data.conv + '%'} delta={data.dConv} deltaUnit="pts"/>
       </div>
 
       {/* Chart */}
-      <Card padding={24} style={{ marginBottom: 24 }}>
+      <Card padding={20} style={{ marginBottom: 12 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 18 }}>
           <h3 style={{ margin: 0, fontSize: 16, fontWeight: 500 }}>Earnings over time</h3>
           <span style={{ fontSize: 11.5, color: 'var(--rh-stone-darkest)', textTransform: 'uppercase', letterSpacing: 0.5 }}>CAD</span>
         </div>
-        <div style={{ height: 260 }}>
+        <div className="overview-chart" style={{ height: 240 }}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={series} margin={{ top: 6, right: 8, bottom: 0, left: -12 }}>
               <defs>
@@ -105,14 +143,6 @@ const Overview = ({ status, onNavigate }) => {
           </ResponsiveContainer>
         </div>
       </Card>
-
-      {/* Quick access */}
-      <h3 style={{ fontSize: 13, fontWeight: 500, color: 'var(--rh-stone-darkest)', textTransform: 'uppercase', letterSpacing: 0.7, margin: '8px 0 12px' }}>Quick access</h3>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
-        <QuickAccess name="Mortgage" status="approved" desc="Embed widgets and tracked links across calculators and rate tables." last="Last updated 2 days ago" icon={<I.Home size={17}/>} onOpen={() => onNavigate('mortgage')}/>
-        <QuickAccess name="Credit Cards" status={status.cards} desc="Hosted whitelabel comparison page on your subdomain." last={status.cards === 'approved' ? 'Live since Apr 18, 2026' : status.cards === 'pending' ? 'Submitted just now' : 'Apply to get started'} icon={<I.CreditCard size={17}/>} onOpen={() => onNavigate('cards')}/>
-        <QuickAccess name="Insurance" status={status.insurance} desc="Quote launchers for auto and home — full attribution." last={status.insurance === 'approved' ? 'Live since Apr 22, 2026' : status.insurance === 'pending' ? 'Under review' : 'Apply to get started'} icon={<I.Shield size={17}/>} onOpen={() => onNavigate('insurance')}/>
-      </div>
     </div>
   );
 };

@@ -9,7 +9,7 @@ const Ins_LockedView = ({ onApply }) => (
 
     <Card padding={28} style={{ marginBottom: 20 }}>
       <h3 style={{ fontSize: 16, fontWeight: 500, margin: '0 0 18px' }}>How it works</h3>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+      <div className="grid-1-3">
         {[
           { n: 1, title: 'Apply', desc: 'Tell us about your business and audience.' },
           { n: 2, title: 'Get reviewed', desc: "We'll reach out via email within 1–2 business days." },
@@ -43,21 +43,24 @@ const Ins_LockedView = ({ onApply }) => (
       </ul>
     </Card>
 
-    <Btn variant="primary" size="l" onClick={onApply} iconRight={<I.ArrowRight size={16}/>}>Apply for insurance affiliate access</Btn>
+    <Btn variant="primary" size="l" onClick={onApply} iconRight={<I.ArrowRight size={16}/>} full>Apply for access</Btn>
   </div>
 );
 
 // Production-style launcher previews
 const TEAL = '#1f7a99';
 
-const PostalLauncher = ({ cta, color = TEAL, scale = 1 }) => (
+const PostalLauncher = ({ cta, color = TEAL, scale = 1 }) => {
+  const mobile = useIsMobile();
+  return (
   <div style={{
     background: '#fff', border: '1px solid var(--rh-stone-light)',
     borderRadius: 8, padding: 12 * scale,
-    display: 'flex', gap: 10 * scale, alignItems: 'stretch',
+    display: 'flex', flexDirection: mobile ? 'column' : 'row', gap: 8 * scale, alignItems: 'stretch',
   }}>
     <div style={{
-      flex: '0 0 60%', height: 44 * scale,
+      flex: mobile ? 'none' : '0 0 60%',
+      height: 44 * scale,
       border: '1px solid var(--rh-stone-light)', borderRadius: 4,
       padding: '0 14px', display: 'flex', alignItems: 'center',
       fontSize: 14 * scale, color: 'var(--rh-stone-darkest)',
@@ -68,12 +71,15 @@ const PostalLauncher = ({ cta, color = TEAL, scale = 1 }) => (
       fontSize: 14 * scale, fontWeight: 500, cursor: 'pointer',
     }}>{cta}</button>
   </div>
-);
+  );
+};
 
 const TypeProvinceLauncher = ({ cta, color = TEAL, scale = 1 }) => {
+  const mobile = useIsMobile();
   const dropdown = (label) => (
     <div style={{
-      flex: '0 0 30%', height: 44 * scale,
+      flex: mobile ? 'none' : '0 0 30%',
+      height: 44 * scale,
       border: '1px solid var(--rh-stone-light)', borderRadius: 4,
       padding: '0 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       fontSize: 13 * scale, color: 'var(--rh-stone-darkest)', background: '#fff',
@@ -86,7 +92,7 @@ const TypeProvinceLauncher = ({ cta, color = TEAL, scale = 1 }) => {
     <div style={{
       background: '#fff', border: '1px solid var(--rh-stone-light)',
       borderRadius: 8, padding: 12 * scale,
-      display: 'flex', gap: 8 * scale, alignItems: 'stretch',
+      display: 'flex', flexDirection: mobile ? 'column' : 'row', gap: 8 * scale, alignItems: 'stretch',
     }}>
       {dropdown('Insurance type')}
       {dropdown('Province')}
@@ -227,23 +233,38 @@ const Ins_ApprovedView = ({ onReset }) => {
 
   return (
     <div className="fade-in">
-      <ResetToLockedLink onReset={onReset}/>
       <h1 className="serif" style={{ fontSize: 30, fontWeight: 600, margin: '0 0 8px', letterSpacing: '-0.01em' }}>Insurance</h1>
       <p style={{ fontSize: 15, color: 'var(--rh-stone-darkest)', margin: '0 0 24px' }}>Embed quote launchers across your articles and product pages.</p>
 
       <div style={{ marginBottom: 28 }}>
-        <Collapsible title="Quick link" defaultOpen badge={<Pill tone="lime" size="s">Available</Pill>}>
-          <p style={{ fontSize: 13.5, color: 'var(--rh-stone-darkest)', margin: '12px 0 14px' }}>
-            Send traffic to the general Ratehub insurance page with tracking attached.
+        <Collapsible title="Quick links" defaultOpen badge={<Pill tone="lime" size="s">Available</Pill>}>
+          <p style={{ fontSize: 13.5, color: 'var(--rh-stone-darkest)', margin: '12px 0 16px' }}>
+            Direct links to each Ratehub insurance vertical with your tracking attached.
           </p>
-          <CopyBox text={`https://www.ratehub.ca/insurance?aff_id=${PARTNER.affId}`}/>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {[
+              { id: 'auto', label: 'Auto',  icon: <I.Car size={14}/>,    url: `https://www.ratehub.ca/insurance/best-car-insurance-quote?aff_id=${PARTNER.affId}` },
+              { id: 'home', label: 'Home',  icon: <I.Home size={14}/>,   url: `https://www.ratehub.ca/insurance/best-home-insurance-quote?aff_id=${PARTNER.affId}` },
+              { id: 'life', label: 'Life',  icon: <I.Heart size={14}/>,  url: `https://www.ratehub.ca/insurance/life?aff_id=${PARTNER.affId}` },
+            ].map(q => (
+              <div key={q.id} style={{ display: 'grid', gridTemplateColumns: '120px 1fr', alignItems: 'center', gap: 16 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{ width: 26, height: 26, borderRadius: 6, background: 'var(--rh-blueberry-lightest)', color: 'var(--rh-blueberry-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    {q.icon}
+                  </div>
+                  <div style={{ fontSize: 13.5, fontWeight: 500, color: 'var(--rh-blackberry)' }}>{q.label}</div>
+                </div>
+                <CopyBox text={q.url}/>
+              </div>
+            ))}
+          </div>
         </Collapsible>
       </div>
 
       <h2 style={{ fontSize: 18, fontWeight: 500, margin: '0 0 4px' }}>Quote launchers</h2>
       <p style={{ fontSize: 13.5, color: 'var(--rh-stone-darkest)', margin: '0 0 16px' }}>Embed a launcher into your site. Users land on the Ratehub quote flow with your tracking attached.</p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
+      <div className="grid-1-2">
         {launchers.map(l => (
           <LauncherCard key={l.id} launcher={l} onOpen={() => setActive(l)}/>
         ))}
@@ -255,8 +276,12 @@ const Ins_ApprovedView = ({ onReset }) => {
 };
 
 const Insurance = ({ status, onStatusChange }) => {
-  if (status === 'locked')   return <Ins_LockedView onApply={() => onStatusChange('form')}/>;
-  if (status === 'form')     return <ApplicationForm bu="insurance" onSubmit={() => onStatusChange('pending-auto')} onCancel={() => onStatusChange('locked')}/>;
+  const [applyOpen, setApplyOpen] = React.useState(false);
+  const closeAndSubmit = () => { setApplyOpen(false); onStatusChange('pending-auto'); };
+  if (status === 'locked')   return (<>
+    <Ins_LockedView onApply={() => setApplyOpen(true)}/>
+    <ApplyConfirmModal open={applyOpen} vertical="insurance" onClose={() => setApplyOpen(false)} onSubmit={closeAndSubmit}/>
+  </>);
   if (status === 'pending')  return <PendingView vertical="insurance" onReset={() => onStatusChange('locked')}/>;
   if (status === 'approved') return <Ins_ApprovedView onReset={() => onStatusChange('locked')}/>;
   return null;

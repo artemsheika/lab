@@ -2,14 +2,14 @@
 
 const CC_LockedView = ({ onApply }) => (
   <div className="fade-in">
-    <h1 className="serif" style={{ fontSize: 30, fontWeight: 600, margin: '0 0 8px', letterSpacing: '-0.01em' }}>Credit Cards</h1>
+    <h1 className="serif" style={{ fontSize: 30, fontWeight: 600, margin: '0 0 8px', letterSpacing: '-0.01em' }}>Everyday Banking</h1>
     <p style={{ fontSize: 15, color: 'var(--rh-stone-darkest)', margin: '0 0 28px', maxWidth: 760 }}>
-      Credit card comparisons must run on a Ratehub-hosted whitelabel page for compliance reasons. We'll spin up <span className="mono" style={{ background: 'var(--rh-stone-lightest)', padding: '1px 6px', borderRadius: 4, fontSize: 13 }}>[your-brand].partners.ratehub.ca/credit-cards</span> for you.
+      Embed our banking and credit card tools on your site. Whitelabel credit card comparisons and calculators for savings, retirement, and debt — all under one approval.
     </p>
 
     <Card padding={28} style={{ marginBottom: 20 }}>
       <h3 style={{ fontSize: 16, fontWeight: 500, margin: '0 0 18px' }}>How it works</h3>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+      <div className="grid-1-3">
         {[
           { n: 1, title: 'Apply', desc: 'Tell us about your business and audience.' },
           { n: 2, title: 'Get reviewed', desc: "We'll reach out via email within 1–2 business days." },
@@ -43,114 +43,15 @@ const CC_LockedView = ({ onApply }) => (
       </ul>
     </Card>
 
-    <Btn variant="primary" size="l" onClick={onApply} iconRight={<I.ArrowRight size={16}/>}>Apply for credit card affiliate access</Btn>
+    <Btn variant="primary" size="l" onClick={onApply} iconRight={<I.ArrowRight size={16}/>} full>Apply for access</Btn>
   </div>
 );
-
-const CC_ApplicationForm = ({ onSubmit, onCancel, vertical = 'cards' }) => {
-  const insurance = vertical === 'insurance';
-  const [form, setForm] = React.useState({
-    company: PARTNER.company, website: 'acmemedia.ca',
-    traffic: '50,000 – 250,000', audience: 'Canadian personal finance readers, 28–55',
-    why: '', agree: false, file: false,
-    verticals: { auto: true, home: true, condo: false, life: false },
-  });
-  const [submitting, setSubmitting] = React.useState(false);
-  const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
-
-  const submit = (e) => {
-    e?.preventDefault();
-    if (!form.agree) return;
-    setSubmitting(true);
-    setTimeout(() => onSubmit(), 600);
-  };
-
-  return (
-    <div className="fade-in">
-      <h1 className="serif" style={{ fontSize: 30, fontWeight: 600, margin: '0 0 8px', letterSpacing: '-0.01em' }}>{insurance ? 'Insurance' : 'Credit Cards'}</h1>
-      <p style={{ fontSize: 15, color: 'var(--rh-stone-darkest)', margin: '0 0 28px' }}>
-        Apply for {insurance ? 'insurance' : 'credit card'} affiliate access. We'll review and reach out within 1–2 business days.
-      </p>
-
-      <form onSubmit={submit}>
-        <Card padding={28}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 18 }}>
-            <Field label="Company name"><TextInput value={form.company} onChange={(e) => set('company', e.target.value)}/></Field>
-            <Field label="Website URL"><TextInput value={form.website} onChange={(e) => set('website', e.target.value)} placeholder="example.com"/></Field>
-            <Field label="Monthly traffic">
-              <SelectEl value={form.traffic} onChange={(e) => set('traffic', e.target.value)} options={TRAFFIC_TIERS}/>
-            </Field>
-            <Field label="Primary audience"><TextInput value={form.audience} onChange={(e) => set('audience', e.target.value)}/></Field>
-          </div>
-
-          {insurance ? (
-            <Field label="Insurance verticals of interest" style={{ marginBottom: 18 }}>
-              <div style={{ display: 'flex', gap: 18, paddingTop: 4 }}>
-                {[
-                  { k: 'auto',  l: 'Auto' },
-                  { k: 'home',  l: 'Home' },
-                  { k: 'condo', l: 'Condo' },
-                  { k: 'life',  l: 'Life' },
-                ].map(o => (
-                  <Checkbox key={o.k} checked={form.verticals[o.k]} onChange={(e) => set('verticals', { ...form.verticals, [o.k]: e.target.checked })} label={o.l}/>
-                ))}
-              </div>
-            </Field>
-          ) : (
-            <Field label="Why credit cards?" style={{ marginBottom: 18 }}>
-              <Textarea value={form.why} onChange={(e) => set('why', e.target.value)}
-                placeholder="Tell us about your audience and why credit-card content fits your site." rows={4}/>
-            </Field>
-          )}
-
-          <Field label="Upload signed agreement" style={{ marginBottom: 18 }}>
-            {form.file ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: 'var(--rh-lime-lightest)', borderRadius: 8, fontSize: 13.5, color: 'var(--rh-lime-darkest)' }}>
-                <I.CheckCircle size={16}/> agreement.pdf — uploaded ✓
-                <button onClick={() => set('file', false)} type="button" style={{ marginLeft: 'auto', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: 12, color: 'var(--rh-stone-darkest)' }}>Remove</button>
-              </div>
-            ) : (
-              <button type="button" onClick={() => set('file', true)}
-                style={{
-                  border: '1.5px dashed var(--rh-stone)', borderRadius: 8,
-                  padding: '18px 14px', background: 'var(--rh-stone-lightest)',
-                  cursor: 'pointer', fontFamily: 'inherit', fontSize: 13.5,
-                  color: 'var(--rh-blackberry)',
-                  display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'center',
-                }}>
-                <I.Upload size={16} style={{ color: 'var(--rh-blueberry-dark)' }}/>
-                Click to upload signed agreement (PDF)
-              </button>
-            )}
-          </Field>
-
-          <div style={{ paddingTop: 8, borderTop: '1px solid var(--rh-stone-light)' }}>
-            <div style={{ marginTop: 16 }}>
-              <Checkbox checked={form.agree} onChange={(e) => set('agree', e.target.checked)} label="I agree to the Ratehub partner brand and compliance guidelines."/>
-            </div>
-          </div>
-        </Card>
-
-        <div style={{ display: 'flex', gap: 10, marginTop: 20, justifyContent: 'flex-end' }}>
-          <Btn variant="secondary" type="button" onClick={onCancel}>Cancel</Btn>
-          <Btn variant="primary" type="submit" disabled={!form.agree || submitting}
-            icon={submitting ? <I.Loader size={14} style={{ animation: 'spin 1s linear infinite' }}/> : null}>
-            {submitting ? 'Submitting…' : 'Submit application'}
-          </Btn>
-        </div>
-      </form>
-
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-    </div>
-  );
-};
 
 const PendingView = ({ vertical = 'cards', onReset }) => {
   const insurance = vertical === 'insurance';
   return (
     <div className="fade-in">
-      <ResetToLockedLink onReset={onReset}/>
-      <h1 className="serif" style={{ fontSize: 30, fontWeight: 600, margin: '0 0 8px', letterSpacing: '-0.01em' }}>{insurance ? 'Insurance' : 'Credit Cards'}</h1>
+      <h1 className="serif" style={{ fontSize: 30, fontWeight: 600, margin: '0 0 8px', letterSpacing: '-0.01em' }}>{insurance ? 'Insurance' : 'Everyday Banking'}</h1>
       <p style={{ fontSize: 15, color: 'var(--rh-stone-darkest)', margin: '0 0 32px' }}>Your application is in review.</p>
 
       <Card padding={36} style={{ maxWidth: 560, margin: '0 auto', textAlign: 'center' }}>
@@ -356,7 +257,81 @@ const SummaryItem = ({ label, value }) => (
   </div>
 );
 
+// Quick-link row: monospace URL on the left, copy button on the right
+const QuickLinkCopyRow = ({ url }) => {
+  const [copied, setCopied] = React.useState(false);
+  const copy = async () => {
+    try { await navigator.clipboard.writeText(url); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch (e) {}
+  };
+  return (
+    <div style={{ display: 'flex', alignItems: 'stretch', background: '#fff' }}>
+      <div style={{
+        flex: 1, padding: '12px 14px', fontFamily: 'var(--rh-font-mono)',
+        fontSize: 12.5, color: 'var(--rh-blackberry)', overflow: 'auto',
+        whiteSpace: 'nowrap', lineHeight: 1.5,
+      }}>{url}</div>
+      <button onClick={copy} aria-label="Copy"
+        style={{
+          background: copied ? 'var(--rh-lime-lightest)' : 'transparent',
+          border: 'none', borderLeft: '1px solid var(--rh-stone-light)',
+          padding: '0 16px', cursor: 'pointer',
+          color: copied ? 'var(--rh-lime-dark)' : 'var(--rh-blueberry-dark)',
+          fontFamily: 'inherit', fontSize: 12.5, fontWeight: 500,
+          display: 'flex', alignItems: 'center', gap: 6,
+          transition: 'background 200ms, color 200ms',
+        }}>
+        {copied ? <I.Check size={14} stroke={2.5}/> : <I.Copy size={14}/>}
+        {copied ? 'Copied' : 'Copy'}
+      </button>
+    </div>
+  );
+};
+
+// Calculator embed configurator (side-sheet) — mirrors Mortgage WidgetSideSheet
+const CalculatorSideSheet = ({ calc, open, onClose }) => {
+  const [tab, setTab] = React.useState('iframe');
+  React.useEffect(() => { if (calc) setTab('iframe'); }, [calc]);
+  if (!calc) return null;
+
+  const baseUrl = `https://www.ratehub.ca/embed/${calc.id}?aff_id=${PARTNER.affId}`;
+  const iframe = `<iframe src="${baseUrl}" width="100%" height="600" frameborder="0"></iframe>`;
+  const js = `<div id="rh-${calc.id}"></div>
+<script>
+  window.rhConfig = { affId: "${PARTNER.affId}" };
+</script>
+<script src="https://www.ratehub.ca/embed/${calc.id}.js" async></script>`;
+
+  return (
+    <SideSheet open={open} onClose={onClose} title={calc.name} width={560}>
+      <div style={{ marginBottom: 22 }}>
+        <PreviewBox label={calc.name + ' preview'} ratio="16/8" icon={<I.Calculator size={28}/>}/>
+        <p style={{ fontSize: 13, color: 'var(--rh-stone-darkest)', margin: '12px 0 0' }}>{calc.desc}</p>
+      </div>
+
+      <h4 style={{ fontSize: 13, fontWeight: 500, margin: '0 0 12px', color: 'var(--rh-blackberry)', textTransform: 'uppercase', letterSpacing: 0.6 }}>Embed code</h4>
+      <div style={{ marginBottom: 10 }}>
+        <Segmented value={tab} onChange={setTab} options={[
+          { value: 'iframe', label: 'Iframe' },
+          { value: 'js',     label: 'JavaScript snippet' },
+        ]}/>
+      </div>
+      <CopyBox text={tab === 'iframe' ? iframe : js}/>
+
+      <div style={{
+        marginTop: 20, padding: 14, background: 'var(--rh-blueberry-lightest)',
+        borderRadius: 8, fontSize: 12.5, color: 'var(--rh-blueberry-darkest)',
+        display: 'flex', gap: 10, alignItems: 'flex-start',
+      }}>
+        <I.CheckCircle size={16} style={{ color: 'var(--rh-blueberry-dark)', marginTop: 1, flexShrink: 0 }}/>
+        Tracking is built in. We'll attribute every funded product that originates from this calculator.
+      </div>
+    </SideSheet>
+  );
+};
+
 const CC_ApprovedView = ({ onReset, published, onPublish, onUnpublish }) => {
+  const mobile = useIsMobile();
+  const [tab, setTab] = React.useState('configure'); // mobile only
   const [config, setConfig] = React.useState({
     brand: PARTNER.brand,
     slug: PARTNER.slug,
@@ -369,6 +344,7 @@ const CC_ApprovedView = ({ onReset, published, onPublish, onUnpublish }) => {
   const [publishing, setPublishing] = React.useState(false);
   const [publishedAt, setPublishedAt] = React.useState('');
   const [editing, setEditing] = React.useState(false);
+  const [activeCalc, setActiveCalc] = React.useState(null);
   const set = (k, v) => setConfig(c => ({ ...c, [k]: v }));
 
   // If parent flips published flag externally (demo controls), reflect that
@@ -397,9 +373,8 @@ const CC_ApprovedView = ({ onReset, published, onPublish, onUnpublish }) => {
 
   return (
     <div className="fade-in">
-      <ResetToLockedLink onReset={onReset}/>
-      <h1 className="serif" style={{ fontSize: 30, fontWeight: 600, margin: '0 0 8px', letterSpacing: '-0.01em' }}>Credit Cards</h1>
-      <p style={{ fontSize: 15, color: 'var(--rh-stone-darkest)', margin: '0 0 24px' }}>Configure your hosted whitelabel comparison page.</p>
+      <h1 className="serif" style={{ fontSize: 30, fontWeight: 600, margin: '0 0 8px', letterSpacing: '-0.01em' }}>Everyday Banking</h1>
+      <p style={{ fontSize: 15, color: 'var(--rh-stone-darkest)', margin: '0 0 24px' }}>Tracked links, your whitelabel credit card page, and embeddable calculators — all in one place.</p>
 
       {bannerOpen && (
         <div className="fade-in" style={{
@@ -409,22 +384,36 @@ const CC_ApprovedView = ({ onReset, published, onPublish, onUnpublish }) => {
         }}>
           <span style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--rh-lime)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><I.Check size={14} stroke={3}/></span>
           <div style={{ flex: 1, fontSize: 13.5, color: 'var(--rh-lime-darkest)' }}>
-            <strong>Approved.</strong> Configure your whitelabel page below.
+            <strong>Approved.</strong> Your everyday banking tools are ready below.
           </div>
           <button onClick={() => setBannerOpen(false)} aria-label="Dismiss" style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--rh-lime-darkest)', padding: 4 }}><I.X size={16}/></button>
         </div>
       )}
 
-      <div style={{ marginBottom: 16 }}>
-        <Collapsible title="Quick link" defaultOpen badge={<Pill tone="lime" size="s">Available</Pill>}>
-          <p style={{ fontSize: 13.5, color: 'var(--rh-stone-darkest)', margin: '12px 0 14px' }}>
-            Send traffic to the general Ratehub credit cards page with tracking attached.
+      {/* Section 1: Quick links */}
+      <div style={{ marginBottom: 32 }}>
+        <Collapsible title="Quick links" badge={<Pill tone="lime" size="s">Available</Pill>}>
+          <p style={{ fontSize: 13.5, color: 'var(--rh-stone-darkest)', margin: '12px 0 16px' }}>
+            Send traffic to Ratehub product pages with your tracking attached.
           </p>
-          <CopyBox text={`https://www.ratehub.ca/credit-cards?aff_id=${PARTNER.affId}`}/>
+          <div style={{
+            border: '1px solid var(--rh-stone-light)', borderRadius: 8, overflow: 'hidden',
+          }}>
+            {EBANK_QUICK_LINKS.map((q, i) => (
+              <div key={q.id} className="quicklink-row" style={{
+                alignItems: 'stretch',
+                borderTop: i === 0 ? 'none' : '1px solid var(--rh-stone-light)',
+              }}>
+                <div className="quicklink-label" style={{ color: 'var(--rh-blackberry)' }}>{q.label}</div>
+                <QuickLinkCopyRow url={`${q.url}?aff_id=${PARTNER.affId}`}/>
+              </div>
+            ))}
+          </div>
         </Collapsible>
       </div>
 
-      <h2 style={{ fontSize: 18, fontWeight: 500, margin: '28px 0 12px' }}>Your whitelabel page</h2>
+      {/* Section 2: Whitelabel credit card page */}
+      <h2 style={{ fontSize: 18, fontWeight: 500, margin: '0 0 12px' }}>Your whitelabel credit card page</h2>
 
       {isPublished ? (
         <PublishedPanel
@@ -445,9 +434,17 @@ const CC_ApprovedView = ({ onReset, published, onPublish, onUnpublish }) => {
             Post-MVP this will be a split-screen live preview. For MVP, this would ship as a step-by-step form. Both shown here for review.
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '440px 1fr', gap: 18, alignItems: 'flex-start' }}>
+          {mobile && (
+            <div style={{ marginBottom: 14 }}>
+              <Segmented value={tab} onChange={setTab} full options={[
+                { value: 'configure', label: 'Configure' },
+                { value: 'preview',   label: 'Preview' },
+              ]}/>
+            </div>
+          )}
+          <div className="ebank-split" style={{ alignItems: 'flex-start' }}>
             {/* Left pane */}
-            <Card padding={22} style={{ position: 'sticky', top: 24 }}>
+            <Card padding={22} className={mobile && tab !== 'configure' ? 'hide-mobile' : ''} style={{ position: mobile ? 'static' : 'sticky', top: 24 }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 <Field label="Brand name"><TextInput value={config.brand} onChange={(e) => set('brand', e.target.value)}/></Field>
 
@@ -493,7 +490,7 @@ const CC_ApprovedView = ({ onReset, published, onPublish, onUnpublish }) => {
             </Card>
 
             {/* Right pane — live preview */}
-            <div>
+            <div className={mobile && tab !== 'preview' ? 'hide-mobile' : ''}>
               <div style={{ fontSize: 11.5, color: 'var(--rh-stone-darkest)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
                 <I.Eye size={13}/>
                 <span>Live preview</span>
@@ -505,13 +502,35 @@ const CC_ApprovedView = ({ onReset, published, onPublish, onUnpublish }) => {
           </div>
         </>
       )}
+
+      {/* Section 3: Embeddable calculators */}
+      <h2 style={{ fontSize: 18, fontWeight: 500, margin: '48px 0 4px' }}>Embeddable calculators</h2>
+      <p style={{ fontSize: 13.5, color: 'var(--rh-stone-darkest)', margin: '0 0 16px' }}>Drop standalone calculators into any page on your site.</p>
+      <div className="grid-1-2">
+        {EBANK_CALCULATORS.map(c => (
+          <Card key={c.id} padding={16} hover style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <PreviewBox label={c.name} ratio="16/10" icon={<I.Calculator size={22}/>}/>
+            <div>
+              <div style={{ fontSize: 14.5, fontWeight: 500, marginBottom: 4 }}>{c.name}</div>
+              <div style={{ fontSize: 12.5, color: 'var(--rh-stone-darkest)', lineHeight: 1.5, minHeight: 36 }}>{c.desc}</div>
+            </div>
+            <Btn variant="primary" size="s" full onClick={() => setActiveCalc(c)} icon={<I.Code size={13}/>}>Get embed code</Btn>
+          </Card>
+        ))}
+      </div>
+
+      <CalculatorSideSheet calc={activeCalc} open={!!activeCalc} onClose={() => setActiveCalc(null)}/>
     </div>
   );
 };
 
 const CreditCards = ({ status, onStatusChange, published, onPublishChange }) => {
-  if (status === 'locked')   return <CC_LockedView onApply={() => onStatusChange('form')}/>;
-  if (status === 'form')     return <ApplicationForm bu="cards" onSubmit={() => onStatusChange('pending-auto')} onCancel={() => onStatusChange('locked')}/>;
+  const [applyOpen, setApplyOpen] = React.useState(false);
+  const closeAndSubmit = () => { setApplyOpen(false); onStatusChange('pending-auto'); };
+  if (status === 'locked')   return (<>
+    <CC_LockedView onApply={() => setApplyOpen(true)}/>
+    <ApplyConfirmModal open={applyOpen} vertical="cards" onClose={() => setApplyOpen(false)} onSubmit={closeAndSubmit}/>
+  </>);
   if (status === 'pending')  return <PendingView vertical="cards" onReset={() => onStatusChange('locked')}/>;
   if (status === 'approved') return <CC_ApprovedView
     onReset={() => onStatusChange('locked')}

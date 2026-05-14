@@ -83,10 +83,11 @@ const Pill = ({ tone = 'stone', children, dot, size = 'm', style }) => {
   );
 };
 
-const Card = ({ children, style, padding = 24, hover = false, onClick }) => {
+const Card = ({ children, style, padding = 24, hover = false, onClick, className }) => {
   const [h, setH] = React.useState(false);
   return (
     <div
+      className={className}
       onMouseEnter={() => hover && setH(true)}
       onMouseLeave={() => hover && setH(false)}
       onClick={onClick}
@@ -168,9 +169,11 @@ const SelectEl = ({ value, onChange, options, style }) => (
   </div>
 );
 
-const Segmented = ({ value, onChange, options, size = 'm' }) => (
+const Segmented = ({ value, onChange, options, size = 'm', full }) => (
   <div style={{
-    display: 'inline-flex', padding: 3, background: 'var(--rh-stone-lightest)',
+    display: full ? 'flex' : 'inline-flex',
+    width: full ? '100%' : undefined,
+    padding: 3, background: 'var(--rh-stone-lightest)',
     border: '1px solid var(--rh-stone-light)', borderRadius: 9,
   }}>
     {options.map(opt => {
@@ -182,11 +185,14 @@ const Segmented = ({ value, onChange, options, size = 'm' }) => (
           style={{
             border: 'none', background: active ? '#fff' : 'transparent',
             color: active ? 'var(--rh-blackberry)' : 'var(--rh-stone-darkest)',
-            padding: size === 's' ? '5px 10px' : '7px 14px',
+            padding: size === 's' ? '7px 10px' : '8px 14px',
             fontSize: size === 's' ? 12 : 13, fontWeight: 500,
             borderRadius: 6, cursor: 'pointer', fontFamily: 'inherit',
             boxShadow: active ? '0 1px 2px rgba(0,79,110,.10), 0 0 0 1px rgba(0,79,110,.06)' : 'none',
             transition: 'all 150ms',
+            flex: full ? 1 : 'none',
+            minHeight: 36,
+            whiteSpace: 'nowrap',
           }}>{l}</button>
       );
     })}
@@ -300,27 +306,37 @@ const SideSheet = ({ open, onClose, title, children, width = 560 }) => {
     return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = ''; };
   }, [open]);
   if (!open) return null;
+  const mobile = useIsMobile();
+  const panelStyle = mobile
+    ? { position: 'absolute', left: 0, right: 0, bottom: 0, top: '8%', borderTopLeftRadius: 16, borderTopRightRadius: 16 }
+    : { position: 'absolute', top: 0, right: 0, bottom: 0, width };
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 1000 }}>
       <div onClick={onClose} className="backdrop-fade" style={{
         position: 'absolute', inset: 0, background: 'rgba(0,30,42,0.42)',
       }}/>
-      <div className="slide-in" style={{
-        position: 'absolute', top: 0, right: 0, bottom: 0, width,
+      <div className={mobile ? 'slide-up' : 'slide-in'} style={{
+        ...panelStyle,
         background: '#fff', boxShadow: 'var(--rh-shadow-l)',
         display: 'flex', flexDirection: 'column',
       }}>
+        {mobile && (
+          <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 8 }}>
+            <div style={{ width: 38, height: 4, background: 'var(--rh-stone-light)', borderRadius: 2 }}/>
+          </div>
+        )}
         <div style={{
-          padding: '20px 24px', borderBottom: '1px solid var(--rh-stone-light)',
+          padding: mobile ? '14px 18px' : '20px 24px',
+          borderBottom: '1px solid var(--rh-stone-light)',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
-          <h3 style={{ margin: 0, fontSize: 18, fontWeight: 500 }}>{title}</h3>
+          <h3 style={{ margin: 0, fontSize: mobile ? 16 : 18, fontWeight: 500 }}>{title}</h3>
           <button onClick={onClose} aria-label="Close"
-            style={{ border: 'none', background: 'transparent', cursor: 'pointer', padding: 6, color: 'var(--rh-stone-darkest)', borderRadius: 6 }}>
+            style={{ border: 'none', background: 'transparent', cursor: 'pointer', padding: 10, color: 'var(--rh-stone-darkest)', borderRadius: 6, display: 'flex' }}>
             <I.X size={20}/>
           </button>
         </div>
-        <div className="scroll-y" style={{ flex: 1, padding: 24 }}>{children}</div>
+        <div className="scroll-y" style={{ flex: 1, padding: mobile ? '18px 18px 32px' : 24 }}>{children}</div>
       </div>
     </div>
   );
@@ -371,7 +387,104 @@ const Avatar = ({ name, size = 32 }) => {
   );
 };
 
+// Confirmation / centered modal (smaller, lighter than SideSheet)
+const Modal = ({ open, onClose, title, children, width = 440, actions }) => {
+  const mobile = useIsMobile();
+  React.useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => e.key === 'Escape' && onClose?.();
+    window.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = ''; };
+  }, [open]);
+  if (!open) return null;
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 1100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+      <div onClick={onClose} className="backdrop-fade" style={{
+        position: 'absolute', inset: 0, background: 'rgba(0,30,42,0.42)',
+      }}/>
+      <div className="fade-in" role="dialog" aria-modal="true" style={{
+        position: 'relative', width: '100%', maxWidth: width, background: '#fff',
+        borderRadius: 12, boxShadow: 'var(--rh-shadow-l)',
+        border: '1px solid var(--rh-stone-light)',
+        padding: '24px 26px 22px',
+      }}>
+        <button onClick={onClose} aria-label="Close" style={{
+          position: 'absolute', top: 14, right: 14, background: 'transparent',
+          border: 'none', cursor: 'pointer', color: 'var(--rh-stone-darkest)',
+          padding: 6, borderRadius: 6, display: 'flex',
+        }}><I.X size={16}/></button>
+        {title && (
+          <h2 style={{ margin: '0 0 10px', fontSize: 18, fontWeight: 600, letterSpacing: '-0.01em', paddingRight: 24 }}>
+            {title}
+          </h2>
+        )}
+        <div style={{ fontSize: 14, color: 'var(--rh-blackberry-light)', lineHeight: 1.55 }}>{children}</div>
+        {actions && (
+          <div style={{
+            display: 'flex',
+            flexDirection: mobile ? 'column-reverse' : 'row',
+            justifyContent: 'flex-end', gap: 10, marginTop: 22,
+          }}>
+            {actions}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Dismissable info banner — thin, muted, one-line
+const InfoBanner = ({ children, storageKey, style }) => {
+  // Session-scoped dismissal (only persists for current page life)
+  const [open, setOpen] = React.useState(true);
+  if (!open) return null;
+  return (
+    <div className="fade-in" style={{
+      display: 'flex', alignItems: 'center', gap: 12,
+      padding: '10px 14px',
+      background: 'var(--rh-blueberry-lightest)',
+      border: '1px solid var(--rh-blueberry-light)',
+      borderRadius: 8,
+      fontSize: 12.5, color: 'var(--rh-blueberry-darkest)',
+      lineHeight: 1.5,
+      ...style,
+    }}>
+      <I.Info size={14} style={{ color: 'var(--rh-blueberry-dark)', flexShrink: 0 }}/>
+      <div style={{ flex: 1 }}>{children}</div>
+      <button onClick={() => setOpen(false)} aria-label="Dismiss"
+        style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--rh-blueberry-darkest)', padding: 2, display: 'flex', borderRadius: 4, opacity: 0.6 }}
+        onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+        onMouseLeave={(e) => e.currentTarget.style.opacity = '0.6'}>
+        <I.X size={14}/>
+      </button>
+    </div>
+  );
+};
+
 Object.assign(window, {
   Btn, Pill, Card, Field, TextInput, Textarea, SelectEl, Segmented, Checkbox, Radio,
-  CopyBox, ToastHost, SideSheet, PreviewBox, Collapsible, Avatar,
+  CopyBox, ToastHost, SideSheet, PreviewBox, Collapsible, Avatar, Modal, InfoBanner,
+  useBreakpoint, useIsMobile,
 });
+
+// ===== Breakpoint hook =====
+function useBreakpoint() {
+  const get = () => {
+    if (typeof window === 'undefined') return 'desktop';
+    const w = window.innerWidth;
+    if (w < 640) return 'mobile';
+    if (w < 1024) return 'tablet';
+    return 'desktop';
+  };
+  const [bp, setBp] = React.useState(get);
+  React.useEffect(() => {
+    const onResize = () => setBp(get());
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+  return bp;
+}
+function useIsMobile() { return useBreakpoint() === 'mobile'; }
+window.useBreakpoint = useBreakpoint;
+window.useIsMobile = useIsMobile;

@@ -3,9 +3,8 @@
 const PAGE_LABELS = {
   overview: 'Overview',
   mortgage: 'Mortgage',
-  cards: 'Credit Cards',
+  cards: 'Everyday Banking',
   insurance: 'Insurance',
-  banking: 'Banking & Loans',
   guidelines: 'Guidelines',
 };
 
@@ -60,58 +59,88 @@ const DemoBuRow = ({ label, value, onSet, onSkipWait }) => (
 
 const DemoPanel = ({ status, onSet, onResetAll }) => {
   const [open, setOpen] = React.useState(false);
-  return (
-    <div style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 800 }}>
-      {open && (
-        <div className="fade-in" style={{
-          background: '#fff', border: '1px solid var(--rh-stone-light)',
-          borderRadius: 12, padding: 20, width: 320,
-          boxShadow: 'var(--rh-shadow-l)', marginBottom: 10,
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-            <div style={{ fontSize: 13, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <I.Sliders size={14} style={{ color: 'var(--rh-blueberry-dark)' }}/>
-              Demo state
-            </div>
-            <button onClick={() => setOpen(false)} aria-label="Close" style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--rh-stone-darkest)', padding: 2 }}><I.X size={14}/></button>
-          </div>
-          <p style={{ fontSize: 11.5, color: 'var(--rh-stone-darkest)', margin: '0 0 16px' }}>Flip status without filling forms. Reviewers only.</p>
+  const mobile = useIsMobile();
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-            <DemoBuRow label="Credit Cards" value={status.cards}
-              onSet={(v) => onSet('cards', v)}
-              onSkipWait={() => onSet('cards', 'approved')}/>
-            <DemoBuRow label="Insurance" value={status.insurance}
-              onSet={(v) => onSet('insurance', v)}
-              onSkipWait={() => onSet('insurance', 'approved')}/>
-          </div>
-
-          <div style={{ borderTop: '1px solid var(--rh-stone-light)', marginTop: 18, paddingTop: 14 }}>
-            <button onClick={onResetAll}
-              style={{
-                width: '100%', background: 'transparent', color: 'var(--rh-blackberry)',
-                border: '1px solid var(--rh-stone-light)', borderRadius: 6,
-                padding: '8px 10px', cursor: 'pointer', fontFamily: 'inherit',
-                fontSize: 12, fontWeight: 500,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-              }}>
-              <I.RotateCcw size={12}/> Reset everything to defaults
-            </button>
-          </div>
+  const panel = (
+    <div style={{
+      background: '#fff', border: '1px solid var(--rh-stone-light)',
+      borderRadius: mobile ? '16px 16px 0 0' : 12,
+      padding: 20, width: mobile ? '100%' : 320,
+      maxHeight: mobile ? '70vh' : 'none', overflow: 'auto',
+      boxShadow: 'var(--rh-shadow-l)',
+      marginBottom: mobile ? 0 : 10,
+    }}>
+      {mobile && (
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
+          <div style={{ width: 38, height: 4, background: 'var(--rh-stone-light)', borderRadius: 2 }}/>
         </div>
       )}
-      <button onClick={() => setOpen(o => !o)}
-        style={{
-          background: 'var(--rh-blackberry)', color: '#fff', border: 'none',
-          padding: '10px 16px', borderRadius: 9999, cursor: 'pointer',
-          fontFamily: 'inherit', fontSize: 12.5, fontWeight: 500,
-          display: 'flex', alignItems: 'center', gap: 8,
-          boxShadow: 'var(--rh-shadow-m)',
-        }}>
-        <I.Sliders size={14}/>
-        {open ? 'Hide demo controls' : 'Demo controls'}
-      </button>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+        <div style={{ fontSize: 13, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <I.Sliders size={14} style={{ color: 'var(--rh-blueberry-dark)' }}/>
+          Demo state
+        </div>
+        <button onClick={() => setOpen(false)} aria-label="Close" style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--rh-stone-darkest)', padding: 10, display: 'flex', borderRadius: 6 }}><I.X size={14}/></button>
+      </div>
+      <p style={{ fontSize: 11.5, color: 'var(--rh-stone-darkest)', margin: '0 0 16px' }}>Flip status without filling forms. Reviewers only.</p>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+        <DemoBuRow label="Everyday Banking" value={status.cards}
+          onSet={(v) => onSet('cards', v)}
+          onSkipWait={() => onSet('cards', 'approved')}/>
+        <DemoBuRow label="Insurance" value={status.insurance}
+          onSet={(v) => onSet('insurance', v)}
+          onSkipWait={() => onSet('insurance', 'approved')}/>
+      </div>
+
+      <div style={{ borderTop: '1px solid var(--rh-stone-light)', marginTop: 18, paddingTop: 14 }}>
+        <button onClick={onResetAll}
+          style={{
+            width: '100%', background: 'transparent', color: 'var(--rh-blackberry)',
+            border: '1px solid var(--rh-stone-light)', borderRadius: 6,
+            padding: '10px 10px', cursor: 'pointer', fontFamily: 'inherit',
+            fontSize: 12, fontWeight: 500, minHeight: 44,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+          }}>
+          <I.RotateCcw size={12}/> Reset everything to defaults
+        </button>
+      </div>
     </div>
+  );
+
+  return (
+    <>
+      {open && mobile && (
+        <div onClick={() => setOpen(false)} className="backdrop-fade"
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,30,42,0.42)', zIndex: 800 }}/>
+      )}
+      <div style={{
+        position: 'fixed',
+        bottom: mobile && open ? 0 : 24,
+        right: mobile && open ? 0 : 24,
+        left: mobile && open ? 0 : 'auto',
+        zIndex: 801,
+      }}>
+        {open && (
+          <div className={mobile ? 'slide-up' : 'fade-in'}>{panel}</div>
+        )}
+        {!open && (
+          <button onClick={() => setOpen(true)}
+            style={{
+              position: mobile ? 'fixed' : 'static',
+              bottom: mobile ? 16 : undefined, right: mobile ? 16 : undefined,
+              background: 'var(--rh-blackberry)', color: '#fff', border: 'none',
+              padding: '10px 16px', borderRadius: 9999, cursor: 'pointer',
+              fontFamily: 'inherit', fontSize: 12.5, fontWeight: 500,
+              display: 'flex', alignItems: 'center', gap: 8, minHeight: 44,
+              boxShadow: 'var(--rh-shadow-m)',
+            }}>
+            <I.Sliders size={14}/>
+            Demo controls
+          </button>
+        )}
+      </div>
+    </>
   );
 };
 
@@ -133,11 +162,11 @@ const DEFAULT_STATUS = { cards: 'locked', insurance: 'locked' };
 const DEFAULT_PUBLISHED = { cards: false };
 
 const App = () => {
-  const [authState, setAuthState] = React.useState('signin');
-  const [demoPartnerType, setDemoPartnerType] = React.useState('existing');
+  const [authState, setAuthState] = React.useState('marketing');
   const [page, setPage] = React.useState('overview');
   const [status, setStatus] = React.useState(DEFAULT_STATUS);
   const [published, setPublished] = React.useState(DEFAULT_PUBLISHED);
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
 
   // Track pending timers per BU so we can cancel cleanly on reset / re-flip.
   const timersRef = React.useRef({ cards: null, insurance: null });
@@ -192,24 +221,36 @@ const App = () => {
     document.getElementById('canvas-scroll')?.scrollTo({ top: 0 });
   };
 
-  const handleSignIn = () => setAuthState(demoPartnerType === 'new' ? 'registration' : 'portal');
-
-  if (authState === 'signin') return (<><SignIn onSignIn={handleSignIn} demoPartnerType={demoPartnerType} setDemoPartnerType={setDemoPartnerType}/><ToastHost/></>);
-  if (authState === 'registration') return (<><Registration onComplete={() => setAuthState('portal')}/><ToastHost/></>);
-  if (authState === 'signed-out') return (<><SignedOut onSignInAgain={() => setAuthState('signin')}/><ToastHost/></>);
+  if (authState === 'marketing') return (<><Marketing onPortal={() => setAuthState('signin')}/><ToastHost/></>);
+  if (authState === 'signin') return (<><SignIn onSignIn={(asNew) => setAuthState(asNew ? 'registration' : 'portal')} onBack={() => setAuthState('marketing')}/><ToastHost/></>);
+  if (authState === 'registration') return (<><Registration
+    onBack={() => setAuthState('signin')}
+    onSubmit={(form) => {
+      setAuthState('portal');
+      setPage('overview');
+      setStatus(DEFAULT_STATUS);
+      const first = (form?.name || PARTNER.firstName).trim().split(/\s+/)[0];
+      setTimeout(() => window.toast(`Welcome to Ratehub, ${first}. Your portal is ready.`, {
+        icon: <I.Sparkle size={14} style={{ color: 'var(--rh-blueberry-dark)' }}/>, duration: 4200,
+      }), 50);
+    }}/><ToastHost/></>);
+  if (authState === 'signed-out') return (<><Marketing onPortal={() => setAuthState('signin')}/><ToastHost/></>);
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--rh-stone-lightest)' }}>
-      <Sidebar page={page} onNavigate={navigate} status={status} onSignOut={() => setAuthState('signed-out')}/>
+      <Sidebar page={page} onNavigate={navigate} status={status} onSignOut={() => setAuthState('marketing')}/>
+      <SidebarDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)}
+        page={page} onNavigate={navigate} status={status}
+        onSignOut={() => setAuthState('marketing')}/>
 
-      <main id="canvas-scroll" className="scroll-y" style={{ flex: 1, height: '100vh', position: 'relative' }}>
-        <div style={{ maxWidth: 1180, margin: '0 auto', padding: '32px 40px 96px' }}>
+      <main id="canvas-scroll" className="scroll-y" style={{ flex: 1, height: '100vh', position: 'relative', minWidth: 0 }}>
+        <MobilePortalHeader page={page} onOpen={() => setDrawerOpen(true)}/>
+        <div style={{ maxWidth: 1180, margin: '0 auto', padding: 'clamp(20px, 4vw, 32px) clamp(16px, 4vw, 40px) 96px' }}>
 
           {page === 'overview'   && <Overview status={status} onNavigate={navigate}/>}
           {page === 'mortgage'   && <Mortgage/>}
           {page === 'cards'      && <CreditCards status={status.cards} onStatusChange={(v) => setBu('cards', v)} published={published.cards} onPublishChange={(v) => setPublished(p => ({ ...p, cards: v }))}/>}
           {page === 'insurance'  && <Insurance status={status.insurance} onStatusChange={(v) => setBu('insurance', v)}/>}
-          {page === 'banking'    && <Banking/>}
           {page === 'guidelines' && <Guidelines/>}
         </div>
       </main>

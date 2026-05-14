@@ -1,17 +1,15 @@
 // Mortgage page + side-sheet
 
 const WidgetSideSheet = ({ widget, open, onClose }) => {
-  const [size, setSize] = React.useState('default');
-  const [theme, setTheme] = React.useState('light');
   const [province, setProvince] = React.useState('ON');
   const [tab, setTab] = React.useState('iframe');
   if (!widget) return null;
 
   const slug = widget.id;
-  const iframe = `<iframe src="https://www.ratehub.ca/embed/${slug}?aff_id=${PARTNER.affId}&theme=${theme}&province=${province}&size=${size}" width="100%" height="600" frameborder="0"></iframe>`;
+  const iframe = `<iframe src="https://www.ratehub.ca/embed/${slug}?aff_id=${PARTNER.affId}&province=${province}" width="100%" height="600" frameborder="0"></iframe>`;
   const js = `<div id="rh-${slug}"></div>
 <script>
-  window.rhConfig = { affId: "${PARTNER.affId}", theme: "${theme}", province: "${province}", size: "${size}" };
+  window.rhConfig = { affId: "${PARTNER.affId}", province: "${province}" };
 </script>
 <script src="https://www.ratehub.ca/embed/${slug}.js" async></script>`;
 
@@ -24,19 +22,6 @@ const WidgetSideSheet = ({ widget, open, onClose }) => {
 
       <h4 style={{ fontSize: 13, fontWeight: 500, margin: '0 0 12px', color: 'var(--rh-blackberry)', textTransform: 'uppercase', letterSpacing: 0.6 }}>Configure</h4>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 22 }}>
-        <Field label="Size">
-          <Segmented value={size} onChange={setSize} options={[
-          { value: 'default', label: 'Default' },
-          { value: 'compact', label: 'Compact' },
-          { value: 'full', label: 'Full-width' }]
-          } />
-        </Field>
-        <Field label="Theme">
-          <Segmented value={theme} onChange={setTheme} options={[
-          { value: 'light', label: 'Light' },
-          { value: 'dark', label: 'Dark' }]
-          } />
-        </Field>
         <Field label="Default province">
           <SelectEl value={province} onChange={(e) => setProvince(e.target.value)} options={PROVINCES} />
         </Field>
@@ -67,10 +52,12 @@ const Mortgage = () => {
   const [active, setActive] = React.useState(null);
   return (
     <div className="fade-in">
-      <h1 className="serif" style={{ fontSize: 30, fontWeight: 600, margin: '0 0 8px', letterSpacing: '-0.01em' }}>Mortgage widgets</h1>
-      <p style={{ fontSize: 15, color: 'var(--rh-stone-darkest)', margin: '0 0 28px', maxWidth: 720 }}>Embed any of our mortgage tools on your site.
+      <h1 className="serif" style={{ fontSize: 30, fontWeight: 600, margin: '0 0 8px', letterSpacing: '-0.01em' }}>Mortgage</h1>
+      <p style={{ fontSize: 15, color: 'var(--rh-stone-darkest)', margin: '0 0 20px', maxWidth: 720 }}>Embed any of our mortgage tools on your site.</p>
 
-      </p>
+      <InfoBanner style={{ marginBottom: 22 }}>
+        Mortgage widgets are free to embed with no approval required. Note: Ratehub does not pay per click, per lead, or per submission. Payouts apply only to mortgages funded through your tracked widgets.
+      </InfoBanner>
 
       <Collapsible title="Quick link" defaultOpen badge={<Pill tone="lime" size="s">Available now</Pill>}>
         <p style={{ fontSize: 13.5, color: 'var(--rh-stone-darkest)', margin: '12px 0 14px' }}>Send traffic to ratehub.ca/mortgages with your tracking attached.
@@ -80,7 +67,7 @@ const Mortgage = () => {
       </Collapsible>
 
       <h2 style={{ fontSize: 18, fontWeight: 500, margin: '36px 0 16px' }}>Embeddable widgets</h2>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+      <div className="grid-1-2-3">
         {MORTGAGE_WIDGETS.map((w) =>
         <Card key={w.id} padding={16} hover style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <PreviewBox label={w.name} ratio="16/10" icon={<I.Sliders size={22} />} />

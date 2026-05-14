@@ -10,6 +10,7 @@
 <style>
   body { margin: 0; background: var(--rh-coconut); }
   * { box-sizing: border-box; }
+  html, body { overflow-x: hidden; }
   button, input, select, textarea { font-family: inherit; }
   .serif { font-family: 'Source Serif 4', Georgia, serif; font-weight: 600; letter-spacing: -0.01em; }
   .mono { font-family: var(--rh-font-mono); }
@@ -32,8 +33,6 @@
     50% { transform: scale(1.4); opacity: .55; }
   }
   .pulse-dot { animation: pulse-dot 1.4s ease-in-out infinite; }
-  .slide-up { animation: slideUp 240ms cubic-bezier(.2,.8,.2,1); }
-  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
   .nav-item { transition: background-color 200ms, color 200ms; }
   .nav-item:hover { background: var(--rh-stone-lightest); }
   .row-hover:hover { background: var(--rh-stone-lightest); }
@@ -43,6 +42,158 @@
   .recharts-tooltip-wrapper { outline: none !important; }
   .recharts-cartesian-axis-tick text { fill: var(--rh-stone-darkest); font-size: 11px; }
   .recharts-cartesian-grid line { stroke: var(--rh-stone-light); }
+
+  /* ===== Responsive utilities ===== */
+  .scrollbar-none { scrollbar-width: none; }
+  .scrollbar-none::-webkit-scrollbar { display: none; }
+
+  /* Hide / show by breakpoint. Mobile-first. Only force `none` for hidden state;
+     visible state has no rule so the element's own display (inline-style / default) wins. */
+  @media (max-width: 639px) {
+    .hide-mobile { display: none !important; }
+    .show-desktop { display: none !important; }
+    .show-tablet { display: none !important; }
+  }
+  @media (min-width: 640px) and (max-width: 1023px) {
+    .show-mobile { display: none !important; }
+    .show-desktop { display: none !important; }
+  }
+  @media (min-width: 1024px) {
+    .show-mobile { display: none !important; }
+    .show-tablet { display: none !important; }
+    .hide-desktop { display: none !important; }
+  }
+
+  /* Slide-up sheet (mobile) */
+  .slide-up { animation: slideUp 280ms cubic-bezier(.2,.8,.2,1); }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+  /* Marketing 2-col blocks: stack on mobile, side-by-side on tablet+ */
+  .mkt-two-col {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+    align-items: center;
+  }
+  @media (min-width: 768px) {
+    .mkt-two-col { grid-template-columns: 2fr 3fr; gap: 56px; }
+  }
+
+  /* Footer cols: stack on mobile, 4-up on desktop */
+  .mkt-footer-cols {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  @media (min-width: 640px) {
+    .mkt-footer-cols { grid-template-columns: 1fr 1fr; }
+  }
+  @media (min-width: 1024px) {
+    .mkt-footer-cols { grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 48px; }
+  }
+
+  /* Reusable: 2x2 on tablet, 1-col on mobile, N-col grids on desktop */
+  .grid-1-2-3 {
+    display: grid; gap: 16px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 640px) { .grid-1-2-3 { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .grid-1-2-3 { grid-template-columns: repeat(3, 1fr); } }
+
+  .grid-1-2 {
+    display: grid; gap: 16px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 640px) { .grid-1-2 { grid-template-columns: repeat(2, 1fr); } }
+
+  /* 3-up grid that collapses 1-col mobile, 3-col tablet+ */
+  .grid-1-3 {
+    display: grid; gap: 16px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 640px) { .grid-1-3 { grid-template-columns: repeat(3, 1fr); gap: 20px; } }
+
+  /* Everyday Banking whitelabel split-pane: stacks on tablet, 2-col on desktop */
+  .ebank-split {
+    display: grid; gap: 18px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 1024px) {
+    .ebank-split { grid-template-columns: 440px 1fr; }
+  }
+
+  /* Quick links rows in Everyday Banking — stack label above URL on mobile */
+  .quicklink-row {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 640px) {
+    .quicklink-row { grid-template-columns: 140px 1fr; }
+  }
+  .quicklink-label {
+    padding: 12px 16px;
+    background: var(--rh-stone-lightest);
+    font-size: 13.5;
+    font-weight: 500;
+  }
+  @media (min-width: 640px) {
+    .quicklink-label {
+      border-right: 1px solid var(--rh-stone-light);
+      display: flex; align-items: center;
+    }
+  }
+  @media (max-width: 639px) {
+    .quicklink-label { border-bottom: 1px solid var(--rh-stone-light); }
+  }
+
+  /* Guidelines page layout — TOC sidebar only on desktop */
+  .guidelines-layout {
+    display: grid;
+    gap: 48px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 1024px) {
+    .guidelines-layout { grid-template-columns: 1fr 220px; }
+  }
+
+  /* Recharts label sizing on mobile */
+  @media (max-width: 639px) {
+    .recharts-cartesian-axis-tick text { font-size: 10px; }
+  }
+
+  /* Registration page heading row: stack on mobile, justify on desktop */
+  .reg-head {
+    display: flex; flex-direction: column;
+    align-items: flex-start; gap: 6px;
+  }
+  @media (min-width: 640px) {
+    .reg-head {
+      flex-direction: row; align-items: flex-start; justify-content: space-between; gap: 16px;
+    }
+    .reg-head > .btn, .reg-head button { flex-shrink: 0; }
+  }
+
+  /* Overview filter row */
+  .overview-filter-row {
+    display: flex; flex-direction: column; align-items: stretch; gap: 12px;
+  }
+  @media (min-width: 640px) {
+    .overview-filter-row {
+      flex-direction: row; align-items: center; justify-content: space-between;
+    }
+  }
+  /* Overview stat cards: 1-col on mobile, 3-up on tablet+ */
+  .overview-stats {
+    display: grid; gap: 12px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 640px) {
+    .overview-stats { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  }
+  /* Overview chart height */
+  @media (min-width: 1024px) {
+    .overview-chart { height: 280px !important; }
+  }
 </style>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
@@ -57,10 +208,11 @@
 <script type="text/babel" src="src/primitives.jsx"></script>
 <script type="text/babel" src="src/data.jsx"></script>
 <script type="text/babel" src="src/SignIn.jsx"></script>
+<script type="text/babel" src="src/Marketing.jsx"></script>
 <script type="text/babel" src="src/Sidebar.jsx"></script>
 <script type="text/babel" src="src/Overview.jsx"></script>
 <script type="text/babel" src="src/Mortgage.jsx"></script>
-<script type="text/babel" src="src/ApplicationForm.jsx"></script>
+<script type="text/babel" src="src/Registration.jsx"></script>
 <script type="text/babel" src="src/CreditCards.jsx"></script>
 <script type="text/babel" src="src/Insurance.jsx"></script>
 <script type="text/babel" src="src/Misc.jsx"></script>
